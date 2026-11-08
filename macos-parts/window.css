@@ -1,0 +1,176 @@
+/* ============================================================
+ * macOS 窗口标题栏（可单独携带 / 单独替换）
+ * ------------------------------------------------------------
+ * 作用：把 Typora 自绘的窗口标题栏做成 macOS 观感——
+ *       右上角三个彩色圆点：黄=最小化、绿=最大化、红=关闭（红点在绿点右边），
+ *       直径 14px、间距 9px、右边距 12px。
+ *
+ * 生效前提：Typora 偏好设置 → Window Style → Unibody（改完重启）。
+ *           默认的 Classic 模式窗口由 Windows 绘制，CSS 碰不到。
+ *
+ * 依赖的令牌（缺哪个就用这里的兜底值，所以可以直接套到别的主题）：
+ *   --surface           标题栏底色
+ *   --hairline          底部分隔线
+ *   --meta-content-color 文件名颜色
+ *   --text-secondary / --text-tertiary
+ *   --surface-3         菜单按钮悬停底
+ *   --text-color        悬停文字
+ *   --font-text         字体
+ * ============================================================ */
+
+/* 令牌兜底：主题里有就用主题的，没有就用括号里的 */
+:root {
+  --win-chrome-bg: var(--surface, #F4F5F7);
+  --win-chrome-line: var(--hairline, rgba(60, 60, 67, .12));
+  --win-chrome-text: var(--meta-content-color, #8A8A8E);
+  --win-chrome-text2: var(--text-secondary, #6C6C70);
+  --win-chrome-text3: var(--text-tertiary, #8A8A8E);
+  --win-chrome-hover: var(--surface-3, #EDEEF1);
+  --win-chrome-main: var(--text-color, #1D1D1F);
+  --win-chrome-font: var(--font-text, "Segoe UI", sans-serif);
+}
+
+/* ── 标题栏几何与配色 ── */
+#top-titlebar {
+  z-index: 20;
+  background-color: var(--win-chrome-bg);
+  border-bottom: 1px solid var(--win-chrome-line);
+  font-family: var(--win-chrome-font);
+}
+#top-titlebar #w-menu-btn {
+  color: var(--win-chrome-text2);
+  margin-left: 10px;
+  padding: 0 3px;
+  border-radius: 5px;
+  transition: background-color .12s ease, color .12s ease;
+}
+#top-titlebar #w-menu-btn:hover {
+  background-color: var(--win-chrome-hover);
+  color: var(--win-chrome-main);
+}
+#title-text {
+  color: var(--win-chrome-text);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  padding-top: 3px;
+}
+
+/* 交通灯：12px 圆点，贴右侧，按 macOS 的 红→黄→绿 顺序 */
+#w-traffic-lights {
+  float: right;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 24px;
+  padding-right: 12px;
+}
+#top-titlebar #w-close,
+#top-titlebar #w-min,
+#top-titlebar #w-max {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  position: relative;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: default;
+}
+#top-titlebar #w-close > span,
+#top-titlebar #w-min > span,
+#top-titlebar #w-max > span,
+#top-titlebar #w-restore > span,
+#top-titlebar #w-unpin > span {
+  display: none;
+}
+#top-titlebar #w-close { order: 3; background-color: #FF5F57; }
+#top-titlebar #w-min { order: 1; background-color: #FEBC2E; }
+#top-titlebar #w-max { background-color: #28C840; }
+#top-titlebar #w-max-group { order: 2; display: flex; align-items: center; }
+.typora-maxmized #top-titlebar #w-max-group { display: none; }
+
+/* 还原 / 置顶保持 Typora 原本的出现条件，只是换成同样的圆点 */
+#top-titlebar #w-restore { display: none; }
+.typora-maxmized #top-titlebar #w-restore {
+  order: 2;
+  display: flex;
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  position: relative;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background-color: #28C840;
+}
+#top-titlebar #w-unpin { display: none; }
+.always-on-top #top-titlebar #w-unpin {
+  order: 4;
+  display: flex;
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  position: relative;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--win-chrome-text3);
+}
+
+#top-titlebar #w-close:hover { background-color: #FF5F57; }
+#top-titlebar #w-min:hover { background-color: #FEBC2E; }
+#top-titlebar #w-max:hover { background-color: #28C840; }
+.typora-maxmized #top-titlebar #w-restore:hover { background-color: #28C840; }
+.always-on-top #top-titlebar #w-unpin:hover { background-color: var(--win-chrome-text2); }
+#top-titlebar #w-close::after,
+#top-titlebar #w-min::after,
+#top-titlebar #w-max::after,
+#top-titlebar #w-restore::after {
+  color: rgba(0, 0, 0, .62);
+  font: 800 11px/1 var(--win-chrome-font);
+}
+#top-titlebar #w-close:hover::after { content: "\00d7"; }
+#top-titlebar #w-min:hover::after { content: "\2212"; }
+#top-titlebar #w-max:hover::after { content: "+"; }
+#top-titlebar #w-restore:hover::after { content: "\25a1"; }
+
+/* 悬停中文提示（CSS 无法给元素加 title 属性，这里用伪元素做气泡） */
+#top-titlebar #w-min::before,
+#top-titlebar #w-max::before,
+#top-titlebar #w-close::before,
+#top-titlebar #w-restore::before,
+#top-titlebar #w-unpin::before {
+  position: absolute;
+  top: 24px;
+  right: -1px;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  font: 500 11px/1 var(--win-chrome-font);
+  color: var(--win-chrome-main);
+  background-color: var(--win-chrome-hover);
+  border: 1px solid var(--win-chrome-line);
+  border-radius: 5px;
+  padding: 4px 7px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .16);
+  transition: opacity .12s ease .04s;
+}
+#top-titlebar #w-close:hover::before { content: "关闭"; opacity: 1; }
+#top-titlebar #w-min:hover::before { content: "最小化"; opacity: 1; }
+#top-titlebar #w-max:hover::before { content: "最大化"; opacity: 1; }
+.typora-maxmized #top-titlebar #w-restore:hover::before { content: "还原"; opacity: 1; }
+.always-on-top #top-titlebar #w-unpin:hover::before { content: "取消置顶"; opacity: 1; }
