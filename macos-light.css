@@ -131,9 +131,9 @@ body.is-mac {
   -webkit-font-smoothing: antialiased;
 }
 
-/* 版心：600–760px 是 macOS 文档类应用的典型阅读宽，超过 82ch 眼睛会跳行 */
+/* 版心：900px，中文一行约 51 字；宽屏再放到 980px。源代码模式同宽 */
 #write {
-  max-width: 740px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 64px 40px 160px;
   color: var(--text-color);
@@ -143,7 +143,7 @@ body.is-mac {
 }
 
 @media only screen and (min-width: 1500px) {
-  #write { max-width: 780px; }
+  #write { max-width: 980px; }
 }
 
 #write.first-line-indent p { text-indent: 2em; }
@@ -889,8 +889,13 @@ textarea:focus {
    所以这里把宿主的值还回去，只改颜色、不改几何。 */
 #typora-source .CodeMirror-lines {
   padding: 30px 30px 64px 60px;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
+}
+
+/* 宽屏时源码模式与正文同步放宽（这条必须写在上面规则之后，否则被覆盖） */
+@media only screen and (min-width: 1500px) {
+  #typora-source .CodeMirror-lines { max-width: 980px; }
 }
 
 /* 底部「源代码模式」开关：宿主给它铺了 #eee 的白底，这里换成主题的中性面 */
