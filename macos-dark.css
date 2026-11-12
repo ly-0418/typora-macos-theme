@@ -28,6 +28,8 @@
   --accent-color: #0A84FF;
   --accent-soft: rgba(10, 132, 255, 0.24);
   --accent-border: rgba(10, 132, 255, 0.36);
+  --accent-hover: #55A9FF;          /* 主按钮悬停：深色下往亮走，而不是压暗 */
+  --accent-pressed: #2E93F5;        /* 按下时收回到系统蓝 */
   --link-color: #6CB4FF;            /* 深底上要更亮才够 4.5:1 */
   --link-hover: #9CCFFF;
 
@@ -796,6 +798,19 @@ textarea:focus {
   color: #FFFFFF;
 }
 
+/* 主按钮的悬停必须单独写：宿主 `.btn:hover` 的特异性是 0,2,0，高于 `.btn-primary` 的 0,1,0，
+   不补这一条，鼠标一放上去蓝色就被按钮的通用灰底盖掉，确认键看起来"褪色"了。 */
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: #FFFFFF;
+}
+.btn-primary:active {
+  background: var(--accent-pressed);
+  border-color: var(--accent-pressed);
+  color: #FFFFFF;
+}
+
 body #typora-quick-open {
   background: var(--surface);
   border: 1px solid var(--hairline);
@@ -901,6 +916,14 @@ body #typora-quick-open {
 }
 
 .megamenu-menu-section {
+  background: var(--bg-color);
+}
+
+/* 一体化模式下顶部压着 28px 标题栏，宿主只给内容区 16px 上内边距，
+ * 标题会被顶到栏底下。抬到 40px，并把宿主那张白色渐变 + cubes.png
+ * 的背景换掉（否则多出来的这一段会露白）。 */
+.megamenu-content {
+  padding-top: 56px;
   background: var(--bg-color);
 }
 
@@ -1159,3 +1182,291 @@ body #typora-quick-open {
   .md-lang { color: #8A8A8E; background: transparent; }
   .md-toc { break-inside: avoid; }
 }
+
+/* ── Typora 偏好设置页 ────────────────────────────────────────
+ * 偏好设置是一个独立的 webview（resources/page-dist/setting.html），
+ * 但它同样会加载 `typora://app/userData/themes/<当前主题>.css`，
+ * 所以这里的字号和控件尺寸可以直接改，不影响正文。
+ * 宿主 css 的基准是 html 13px，写死的 12px 提示文字更小，整体抬一档到 15px。 */
+#root.ty-preferences { font-size: 15px; line-height: 1.62; }
+
+#root.ty-preferences label,
+#root.ty-preferences .btn,
+#root.ty-preferences .title,
+#root.ty-preferences .table,
+#root.ty-preferences table,
+#root.ty-preferences .tab-item,
+#root.ty-preferences .search-input,
+#root.ty-preferences .list-group-item,
+#root.ty-preferences .form-control,
+#root.ty-preferences .nav-group-item,
+#root.ty-preferences .export-detail,
+#root.ty-preferences .input-group-header,
+#root.ty-preferences .row,
+#root.ty-preferences .cell,
+#root.ty-preferences .panel-title {
+  font-size: 15px;
+}
+
+/* 次级说明文字小一档，保持"主设置项 / 提示文字"的层级差 */
+#root.ty-preferences .input-group-header-hint,
+#root.ty-preferences .panel-content-hint,
+#root.ty-preferences .inline-hint,
+#root.ty-preferences .nav-group-title,
+#root.ty-preferences .export-item,
+#root.ty-preferences .dir-path {
+  font-size: 13px;
+}
+
+/* 下拉框：宿主只给了 min-width，高度跟着原生控件走，13px 字下只有 22px 左右。
+ * 统一抬到 30px，和正文里其他输入控件一致。 */
+#root.ty-preferences select,
+#root.ty-preferences .form-control {
+  height: 30px;
+  min-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 28px;
+  border-radius: var(--r-control);
+}
+
+#root.ty-preferences select {
+  padding-left: 8px;
+  padding-right: 6px;
+  background: var(--input-bg);
+  border: 1px solid var(--control-border);
+  color: var(--text-color);
+}
+
+#root.ty-preferences .form-control {
+  background: var(--input-bg);
+  border: 1px solid var(--control-border);
+  color: var(--text-color);
+}
+
+/* 偏好设置里还有两处原生控件：左上角的搜索框、左侧栏目列表的选中态。
+ * 宿主把选中项写死成 #116cd6 直角蓝块，和主题其他选中态不一致。 */
+#root.ty-preferences .search-input {
+  height: 30px;
+  min-height: 30px;
+  padding: 0 10px;
+  background: var(--input-bg);
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-control);
+  color: var(--text-color);
+  font-size: 15px;
+}
+
+#root.ty-preferences .search-input::placeholder {
+  color: var(--text-tertiary);
+  opacity: 1;
+}
+
+#root.ty-preferences .list-group-item {
+  border-radius: var(--r-control);
+  font-size: 15px;
+}
+
+#root.ty-preferences .list-group-item.active,
+#root.ty-preferences .list-group-item.selected {
+  background-color: var(--active-file-bg-color);
+  color: var(--text-color);
+}
+
+/* 偏好设置里下拉框加高到 30px 后，一行里只剩 select 自己的 4px 上边距，
+ * 连续几行下拉框就贴在一起了。把行的最小高度和上下留白一起放开。 */
+#root.ty-preferences .row {
+  min-height: 36px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#root.ty-preferences .row > .cell > select {
+  margin-top: 0;
+}
+
+/* Export 页里的 label-input-group 是表格行，保持紧凑 */
+#root.ty-preferences .label-input-group .row {
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* ── 菜单面板（点左上角菜单图标展开的那一整屏） ──
+ * 宿主左列行高 44px，字号却只有 14px（继承 body）；右侧面板的
+ * 「Open…」「Import...」是一对方角细线大框。 */
+.megamenu-menu { font-size: 16px; }
+
+#megamenu-menu-list li a { font-size: 16px; }
+
+#megamenu-menu-header-title { font-size: 19px; }
+
+/* 面板里那几个 40px/30px 的细体大标题太抢眼，压到 26/24 并加粗一档 */
+.megamenu-menu-panel h1 { font-size: 26px; line-height: 1.3; font-weight: 600; }
+.megamenu-menu-panel h2 { font-size: 24px; line-height: 1.32; font-weight: 600; }
+
+/* 面板之间原本 64px，标题变小后显得空，收到 44px */
+.megamenu-menu-panel:not(:first-of-type) { margin-top: 32px; }
+
+#recent-file-panel { font-size: 15px; }
+
+.long-btn {
+  font-size: 19px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  color: var(--text-color);
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.long-btn:hover {
+  background: var(--surface-3);
+  border-color: var(--control-border);
+}
+
+.megamenu-menu-panel .btn {
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-card);
+}
+
+/* 偏好设置里的按钮（含 “Clear Recent Folders and Files” 这种）由页面自己的
+ * bootstrap 样式画成直角细框，跟正文弹框的圆角对不上。 */
+#root.ty-preferences button,
+#root.ty-preferences .btn {
+  border-radius: var(--r-control);
+}
+
+/* 宿主把右边那格（.row > .cell）设成 vertical-align: top，而左边 label 是 middle，
+ * 下拉框一加高，文字看着就贴在框的上沿。两边都改成垂直居中。 */
+#root.ty-preferences .row > .cell {
+  vertical-align: middle;
+}
+
+/* 行距再放一档 */
+#root.ty-preferences .row {
+  min-height: 40px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* ── 菜单面板的“打开 / 导入”改成标题与按钮同一行 ──
+ * 这两个面板在 #megamenu-section-open 里，结构就是 h1/h2 + 一个 .long-btn。
+ * 宿主把 h1 做成块级、按钮固定 300px，所以按钮被挤到下一行且只占一小段。
+ * 换成 flex：标题不缩小，按钮吃掉剩余宽度，右边缘顶到面板行尾。 */
+/* 「打开 / 导入」两个面板：标题与按钮同一行。
+ * 只对「标题 + 一个长按钮」这种结构生效——最近文件那个面板里是标题 + 整块
+ * 搜索框和表格，不能并排，所以用 :has() 限定。标题固定 92px 列宽，
+ * 两行按钮的左边缘才对得齐。 */
+#megamenu-section-open .megamenu-menu-panel:has(> .long-btn) {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+#megamenu-section-open .megamenu-menu-panel:has(> .long-btn) h1,
+#megamenu-section-open .megamenu-menu-panel:has(> .long-btn) h2 {
+  flex: 0 0 92px;
+  margin: 0;
+}
+
+#megamenu-section-open .megamenu-menu-panel > .long-btn {
+  flex: 1 1 auto;
+  width: auto;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* 最近使用：标题占一行，下面搜索框 + 表格铺满同一行宽 */
+#megamenu-section-open #recent-file-panel {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+#recent-file-panel-search-input {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  height: 32px;
+  padding: 0 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-control);
+  color: var(--text-color);
+}
+
+#recent-file-panel-search-input::placeholder { color: var(--text-tertiary); opacity: 1; }
+
+#recent-file-panel-action-btn-container { flex: 0 0 auto; margin-right: 0; float: none; }
+
+#recent-file-panel-action-btn { height: 32px; margin: 0; }
+
+#recent-document-table {
+  flex: 1 0 100%;
+  width: 100%;
+  margin-top: 4px;
+  font-size: 13.5px !important;
+}
+
+/* 主题页：标题与「打开主题文件夹」并排，卡片放大、间距收紧、按可用宽度铺满 */
+#megamenu-section-theme {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-left: 30px;
+}
+
+#megamenu-section-theme > .megamenu-menu-panel { display: contents; }
+
+#megamenu-section-theme .megamenu-menu-panel h1 {
+  order: 1;
+  margin: 0;
+}
+
+#open-theme-folder-btn {
+  order: 2;
+  flex: 0 0 auto;
+  width: auto;
+  margin: 0 0 0 auto;
+  padding: 7px 16px;
+  font-size: 15px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  color: var(--text-color);
+  transition: background-color .15s;
+}
+
+#open-theme-folder-btn:hover { background: var(--surface-3); }
+
+#theme-preview-grid {
+  order: 3;
+  flex: 1 0 100%;
+  width: 100%;
+  max-width: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.theme-preview-div {
+  display: block;
+  height: auto;
+  margin: 0;
+  border: 3px solid var(--control-border);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color .15s;
+}
+
+.theme-preview-div:hover { border-color: var(--text-tertiary); }
+.theme-preview-div.active, .theme-preview-div.active:hover { border-color: var(--accent-color); }
+
+.theme-preview-content { display: block; width: 220px; height: 292px; border-radius: 0; }
+
+/* 选中角标跟着卡片边框走（宿主用的是 side-bar-menu-active-tint） */
+.theme-preview-div.active .fa { color: var(--accent-color); }
