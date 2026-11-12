@@ -157,55 +157,58 @@ h1, h2, h3, h4, h5, h6 {
   page-break-after: avoid;
 }
 
-/* h1：文档标题。字距收紧是 SF Display 的排法，不是装饰 */
+/* h1：文档标题。字距收紧是 SF Display 的排法，不是装饰。
+   字阶按 40 / 30 / 24 / 20 / 17 / 15 排，和 16px 正文拉开断崖 */
 h1 {
-  font-size: 2.125rem;        /* 34px */
-  line-height: 1.2;
-  letter-spacing: -0.022em;
-  margin: 0 0 0.72em;
+  font-size: 2.75rem;         /* 44px */
+  line-height: 1.12;
+  letter-spacing: -0.026em;
+  font-weight: 700;
+  margin: 0 0 0.56em;
   padding: 0;
   border: 0;
 }
 
-#write > h1:not(:first-child) { margin-top: 1.15em; }
+#write > h1:not(:first-child) { margin-top: 0.89em; }
 
 h2 {
-  font-size: 1.5rem;          /* 24px */
-  line-height: 1.3;
-  letter-spacing: -0.015em;
-  margin: 0.7em 0 0.52em;
+  font-size: 2rem;            /* 32px */
+  line-height: 1.2;
+  letter-spacing: -0.021em;
+  font-weight: 700;
+  margin: 0.52em 0 0.39em;
   padding: 0;
   border: 0;
 }
 
 h3 {
-  font-size: 1.1875rem;       /* 19px */
-  line-height: 1.42;
-  letter-spacing: -0.008em;
-  margin: 0.55em 0 0.42em;
-}
-
-h4 {
-  font-size: 1.0625rem;       /* 17px */
-  line-height: 1.5;
-  margin: 0.45em 0 0.36em;
-}
-
-h5 {
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 1.625rem;        /* 26px */
+  line-height: 1.3;
+  letter-spacing: -0.016em;
   margin: 0.4em 0 0.3em;
 }
 
-/* h6：小号大写字距标签，只在真的要分类时用 */
+h4 {
+  font-size: 1.375rem;        /* 22px */
+  line-height: 1.38;
+  letter-spacing: -0.01em;
+  margin: 0.35em 0 0.28em;
+}
+
+h5 {
+  font-size: 1.125rem;        /* 18px */
+  line-height: 1.45;
+  margin: 0.36em 0 0.27em;
+}
+
+/* h6：小号标签，只在真的要分类时用 */
 h6 {
-  font-size: 0.8125rem;       /* 13px */
+  font-size: 1rem;            /* 16px */
   line-height: 1.5;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
   color: var(--text-secondary);
-  margin: 0.4em 0 0.4em;
+  margin: 0.32em 0 0.3em;
 }
 
 /* 标题内联代码跟随标题字号，不做视觉噪音 */
@@ -702,6 +705,44 @@ body.on-focus-mode blockquote { border-left-color: var(--hairline-strong); }
   font-weight: 500;
 }
 
+/* 大纲层级：宿主用 .outline-hN>.outline-item 的 padding-left 分级，
+   上面那条 #outline-content .outline-item 权重更高会把它盖掉，这里逐级补回来。
+   一级靠字重和深色，二三级靠缩进，四到六级再加字号递减 */
+#outline-content .outline-h1 > .outline-item {
+  padding-left: 4px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+#outline-content .outline-h2 > .outline-item {
+  padding-left: 18px;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+#outline-content .outline-h3 > .outline-item {
+  padding-left: 32px;
+  color: var(--text-secondary);
+}
+
+#outline-content .outline-h4 > .outline-item {
+  padding-left: 43px;
+  font-size: 0.94em;
+  color: var(--text-secondary);
+}
+
+#outline-content .outline-h5 > .outline-item {
+  padding-left: 53px;
+  font-size: 0.94em;
+  color: var(--text-tertiary);
+}
+
+#outline-content .outline-h6 > .outline-item {
+  padding-left: 62px;
+  font-size: 0.9em;
+  color: var(--text-tertiary);
+}
+
 #md-searchpanel {
   background: var(--surface);
   border-bottom: 1px solid var(--hairline);
@@ -774,6 +815,62 @@ textarea:focus {
 .ty-preferences,
 .ty-preferences .window-content {
   background: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* 「菜单」左列：宿主在 megamenu.css 里把容器写死成深灰 #2F353A、文字 #dedede，
+   而里面的列表吃的是 bootstrap 的白底，两种材质拼在一起就成了截图里那道撞色。
+   这里把整列统一到侧栏材质，文字与 hover 也跟着令牌走。 */
+.megamenu-menu {
+  background: var(--side-bar-bg-color);
+  color: var(--text-color);
+  box-shadow: 0 0 0 1px var(--hairline), 8px 0 28px rgba(0, 0, 0, 0.10);
+}
+
+.megamenu-menu-section {
+  background: var(--bg-color);
+}
+
+.megamenu-menu-header {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.megamenu-menu-header:focus,
+.megamenu-menu-header:hover {
+  color: var(--text-color);
+}
+
+#megamenu-menu-header-title,
+.megamenu-menu-header #megamenu-menu-header-title {
+  color: var(--text-color);
+}
+
+#megamenu-back-btn {
+  color: var(--text-secondary);
+  border-color: var(--control-border);
+}
+
+#megamenu-back-btn:hover {
+  color: var(--text-color);
+  border-color: var(--control-border);
+}
+
+/* 列表本体还挂着 bootstrap 的 .dropdown-menu（白底 + 圆角 + 阴影），
+   class 对 class 压不住，必须用 ID 权重才落到侧栏材质上 */
+#megamenu-menu-list {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#megamenu-menu-list li a {
+  color: var(--text-secondary);
+}
+
+#megamenu-menu-list li a:hover,
+#megamenu-menu-list li a.active {
+  background: var(--surface-3);
   color: var(--text-color);
 }
 
