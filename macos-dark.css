@@ -35,6 +35,7 @@
   --surface: #383841;
   --surface-2: #3C3C45;
   --surface-3: #44444E;
+  --dialog-bg: #3C3C46;              /* 弹框比卡片层再亮一档，压在最上面 */
   --hairline: rgba(255, 255, 255, 0.14);
   --hairline-strong: rgba(255, 255, 255, 0.18);
   --control-border: rgba(255, 255, 255, 0.18);
@@ -114,7 +115,7 @@
   --inline-code-bg: #2A2A2C;
   --mark-bg: rgba(255, 214, 10, 0.22);
   --keycap-bg: #44444E;
-  --input-bg: #2A2A2C;
+  --input-bg: #26262C;              /* 输入框是凹槽，比纸面暗一档 */
 }
 
 /* ───────────────────── ② 页面与版心 ───────────────────── */
@@ -744,14 +745,33 @@ body.on-focus-mode blockquote { border-left-color: var(--hairline-strong); }
 }
 
 #md-searchpanel input,
+input:not([type]),
 input[type="text"],
 input[type="search"],
-textarea {
+input[type="number"],
+input[type="email"],
+input[type="password"],
+.form-control,
+textarea,
+select {
   background: var(--input-bg);
   border: 1px solid var(--control-border);
   border-radius: var(--r-control);
   color: var(--text-color);
   padding: 3px 8px;
+}
+
+/* 下拉框：Chromium 在 color-scheme:dark 下会把它画成纯黑原生控件，
+   和卡片层完全脱节，这里跟输入框统一到同一块材质。 */
+select {
+  padding-right: 6px;
+}
+
+/* 占位符：深色下 Chromium 默认的 placeholder 灰过暗，几乎看不见 */
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
+  opacity: 1;
 }
 
 #md-searchpanel input:focus,
@@ -769,18 +789,32 @@ textarea:focus {
   color: var(--text-color);
 }
 
-.btn:hover { background: #343438; }
+.btn:hover { background: rgba(255, 255, 255, 0.10); }
 .btn-primary {
   background: var(--accent-color);
   border-color: var(--accent-color);
   color: #FFFFFF;
 }
 
-#typora-quick-open {
+body #typora-quick-open {
   background: var(--surface);
   border: 1px solid var(--hairline);
   border-radius: var(--r-window);
   box-shadow: var(--shadow-float);
+}
+
+/* 快速打开的搜索框：宿主只给了容器底色，输入框还是原生控件，
+   深色下会被画成一块纯黑。这里让它透明、只留一条底边线——
+   像 Spotlight 那样"输入行 + 发丝线"，而不是在弹层里再挖一个坑。 */
+#typora-quick-open input,
+#typora-quick-open-input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  border-radius: 0;
+  color: var(--text-color);
+  padding: 6px 6px 7px;
+  outline: 0;
 }
 
 #typora-quick-open-item {
@@ -796,14 +830,59 @@ textarea:focus {
   background: var(--active-file-bg-color);
 }
 
-.modal-dialog,
-.modal-content {
-  background: var(--surface);
+/* 弹框：.modal-dialog 只是定位容器，材质只给 .modal-content。
+   之前两者都设了底色、圆角和投影，渲出来变成"卡片套卡片"——
+   内容区四周露出一圈边，就是「保存」对话框左右多出来的白条。 */
+.modal-dialog {
+  background: transparent;
   border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.modal-content {
+  background: var(--dialog-bg);
+  border: 1px solid var(--hairline);
   border-radius: var(--r-window);
   box-shadow: var(--shadow-float);
   color: var(--text-color);
+  overflow: hidden;
 }
+
+.modal-header {
+  padding: 16px 20px 10px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-color);
+}
+
+.modal-header .close {
+  color: var(--text-secondary);
+  opacity: 1;
+  text-shadow: none;
+}
+
+.modal-body {
+  padding: 14px 20px 18px;
+  color: var(--text-color);
+  font-size: 0.875rem;
+  line-height: 1.62;
+}
+
+.modal-body .row { margin: 0; }
+
+.modal-footer {
+  padding: 0 20px 16px;
+  border-top: 0;
+}
+
+.modal-footer .btn { margin-left: 8px; }
 
 .megamenu-content,
 .ty-preferences,
@@ -893,7 +972,7 @@ textarea:focus {
 }
 
 #recent-file-panel-action-btn:hover {
-  background: #343438;
+  background: rgba(255, 255, 255, 0.10);
   color: var(--text-color);
 }
 
@@ -964,6 +1043,16 @@ textarea:focus {
   border-radius: var(--r-control);
   box-shadow: var(--shadow-float);
   color: var(--text-color);
+}
+
+.context-menu .separator,
+.context-menu .divider {
+  height: 0;
+  padding: 0;
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  opacity: 1;
 }
 
 #typora-source,
